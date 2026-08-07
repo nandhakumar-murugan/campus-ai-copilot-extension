@@ -115,9 +115,13 @@ code --install-extension campus-ai-copilot-1.0.0.vsix
 
 ---
 
-## 🎓 Author & Credits
+## 🔒 License & Business Rights
 
-- **Author**: Nandhakumar M. (B.E. CSE Cybersecurity, 3rd Year / V Semester)
-- **Institution**: KGiSL Institute of Technology (KGiSL ITech), Coimbatore, Tamil Nadu
-- **Roles**: Head of KGiSL Campus Google Community & Google Student Ambassador
-- **Engine**: Powered by Google AI Studio & KGiSL Campus Intranet Supercomputer Cluster.
+**Proprietary & Commercial Software — All Rights Reserved © 2026 Nandhakumar M.**
+
+- **No Unauthorized Use**: No individual, institution, organization, or enterprise may use, copy, reproduce, clone, modify, merge, publish, distribute, sublicense, sell, or rent this software without prior explicit written permission directly from **Nandhakumar M.**
+- **Intellectual Property Rights**: All intellectual property, source code, agent logic, UI/UX designs, and technical architecture belong exclusively to Nandhakumar M.
+
+For business inquiries, licensing, or commercial permissions:
+- **Author**: Nandhakumar M. (KGiSL Institute of Technology)
+- **Email**: `24ucy129nandha@kgkite.ac.in` / `nandhakumar@kgisledu.com`
