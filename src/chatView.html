@@ -19,12 +19,12 @@
 
     /* Premium Glassmorphism Header */
     .header {
-      padding: 10px 14px;
+      padding: 8px 12px;
       background: #161B22;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
     .brand-row { display: flex; align-items: center; justify-content: space-between; }
     .brand {
@@ -60,7 +60,7 @@
       background: rgba(0, 0, 0, 0.3);
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 6px;
-      padding: 4px 8px;
+      padding: 3px 8px;
       font-size: 10px;
       color: #8B949E;
     }
@@ -115,10 +115,10 @@
     .feed {
       flex: 1;
       overflow-y: auto;
-      padding: 14px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       background: #0D1117;
     }
 
@@ -126,49 +126,39 @@
     .msg-block {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
       width: 100%;
     }
 
-    /* RIGHT-ALIGNED USER CHAT BUBBLE */
+    /* MINIMALIST RIGHT-ALIGNED USER BUBBLE */
     .user-block {
       align-self: flex-end;
       width: fit-content;
       max-width: 85%;
       background: linear-gradient(135deg, rgba(0, 242, 254, 0.18), rgba(31, 111, 235, 0.25));
       border: 1px solid rgba(0, 242, 254, 0.4);
-      border-radius: 16px 16px 2px 16px;
-      padding: 8px 14px;
-      box-shadow: 0 4px 14px rgba(0, 242, 254, 0.12);
+      border-radius: 14px 14px 2px 14px;
+      padding: 8px 12px;
+      box-shadow: 0 4px 12px rgba(0, 242, 254, 0.1);
       margin-left: auto;
-    }
-    .user-title {
-      font-size: 10px;
-      font-weight: 700;
-      color: #00F2FE;
-      margin-bottom: 4px;
-      text-align: right;
-      letter-spacing: 0.4px;
-      text-transform: uppercase;
     }
     .user-text { color: #F0F6FC; font-size: 13px; line-height: 1.45; word-break: break-word; }
 
-    /* LEFT-ALIGNED AI RESPONSE CARD */
+    /* MINIMALIST LEFT-ALIGNED AI RESPONSE CARD */
     .ai-block {
       align-self: flex-start;
       width: 100%;
       background: rgba(22, 27, 34, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-left: 3px solid #00F2FE;
-      border-radius: 12px;
-      padding: 12px 14px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
     }
-    .ai-title { font-size: 12px; font-weight: 700; color: #00F2FE; display: flex; align-items: center; gap: 6px; }
     .ai-text { color: #C9D1D9; line-height: 1.55; font-size: 13px; word-break: break-word; }
 
-    /* Action Icons */
-    .action-row { display: flex; gap: 12px; margin-top: 8px; color: #8B949E; font-size: 12px; }
+    /* Compact Action Toolbar */
+    .action-row { display: flex; gap: 10px; margin-top: 6px; color: #8B949E; font-size: 11px; justify-content: flex-end; }
     .action-icon { cursor: pointer; transition: color 0.15s; }
     .action-icon:hover { color: #00F2FE; }
 
@@ -177,13 +167,13 @@
       background: #161B22;
       border: 1px solid #30363D;
       border-radius: 8px;
-      margin: 10px 0;
+      margin: 8px 0;
       overflow: hidden;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
     .code-head {
       background: #21262D;
-      padding: 6px 12px;
+      padding: 4px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -197,14 +187,14 @@
       border: 1px solid rgba(255,255,255,0.1);
       color: #F0F6FC;
       border-radius: 4px;
-      padding: 3px 8px;
+      padding: 2px 6px;
       font-size: 10px;
       cursor: pointer;
       margin-left: 4px;
       transition: all 0.15s ease;
     }
     .code-head button:hover { background: #00F2FE; color: #0D1117; font-weight: 600; }
-    .code-body { padding: 12px; font-family: monospace; font-size: 12px; color: #79C0FF; overflow-x: auto; line-height: 1.5; }
+    .code-body { padding: 10px; font-family: monospace; font-size: 12px; color: #79C0FF; overflow-x: auto; line-height: 1.5; }
 
     /* Slash Menu */
     .slash-menu {
@@ -237,11 +227,11 @@
     /* Footer Input Area */
     .footer {
       position: relative;
-      padding: 10px 12px;
+      padding: 8px 12px;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       background: #161B22;
     }
     .chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
@@ -249,7 +239,7 @@
       background: #21262D;
       border: 1px solid #30363D;
       border-radius: 14px;
-      padding: 4px 10px;
+      padding: 3px 8px;
       font-size: 11px;
       color: #C9D1D9;
       cursor: pointer;
@@ -264,7 +254,7 @@
       background: #0D1117;
       border: 1px solid #30363D;
       border-radius: 8px;
-      padding: 8px 10px;
+      padding: 6px 10px;
       gap: 6px;
     }
     .input-box-wrap:focus-within { border-color: #00F2FE; }
@@ -372,7 +362,6 @@
 
   <div class="feed" id="feed">
     <div class="msg-block ai-block">
-      <div class="ai-title">⚡ Campus AI Copilot</div>
       <div class="ai-text">வணக்கம்! Hello! How can I help you write code or audit security today?</div>
     </div>
   </div>
@@ -463,7 +452,7 @@
         localStorage.setItem('campus_sessions', JSON.stringify(chatSessions));
       }
 
-      feed.innerHTML = '<div class="msg-block ai-block"><div class="ai-title">⚡ Campus AI Copilot</div><div class="ai-text">வணக்கம்! Hello! How can I help you write code or audit security today?</div></div>';
+      feed.innerHTML = '<div class="msg-block ai-block"><div class="ai-text">வணக்கம்! Hello! How can I help you write code or audit security today?</div></div>';
       saveChatHistory();
       renderHistoryList();
     }
@@ -600,7 +589,7 @@
       formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
       formatted = formatted.replace(/^\s*[\*\-] (.*$)/gim, '<li>$1</li>');
       formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#00F2FE;text-decoration:none;font-weight:600;">🌐 $1</a>');
-      formatted = formatted.replace(/^---$/gim, '<hr style="border:none;border-top:1px solid #30363D;margin:10px 0;">');
+      formatted = formatted.replace(/^---$/gim, '<hr style="border:none;border-top:1px solid #30363D;margin:6px 0;">');
 
       return formatted;
     }
@@ -614,21 +603,20 @@
 
       var feed = document.getElementById('feed');
 
-      // RIGHT-ALIGNED USER CHAT BUBBLE
+      // MINIMALIST RIGHT-ALIGNED USER CHAT BUBBLE (NO REPETITIVE TITLE)
       var uBlock = document.createElement('div');
       uBlock.className = 'msg-block user-block';
-      uBlock.innerHTML = '<div class="user-title">YOU</div><div class="user-text">' + escapeHtml(text) + '</div>';
+      uBlock.innerHTML = '<div class="user-text">' + escapeHtml(text) + '</div>';
       feed.appendChild(uBlock);
 
       var modelSelect = document.getElementById('model');
       var model = modelSelect ? modelSelect.value : 'gemini-3.6-flash';
       var msgId = 'msg-' + Date.now();
 
-      // LEFT-ALIGNED AI RESPONSE CARD
+      // MINIMALIST LEFT-ALIGNED AI RESPONSE CARD (NO REPETITIVE TITLE)
       var aBlock = document.createElement('div');
       aBlock.className = 'msg-block ai-block';
-      aBlock.innerHTML = '<div class="ai-title">⚡ Campus AI Copilot</div>' +
-        '<div class="ai-text" id="' + msgId + '"><span class="cursor-blink"></span></div>' +
+      aBlock.innerHTML = '<div class="ai-text" id="' + msgId + '"><span class="cursor-blink"></span></div>' +
         '<div class="action-row">' +
         '<span class="action-icon" title="Read Aloud" onclick="speakText(this)">🔊</span>' +
         '<span class="action-icon" title="Copy" onclick="copyMsg(this)">📋</span>' +
@@ -639,7 +627,7 @@
       feed.appendChild(aBlock);
       feed.scrollTop = feed.scrollHeight;
 
-      saveChatHistory(); // Save immediately so 'hi' is never lost!
+      saveChatHistory(); // Save immediately
 
       setGeneratingState(true);
       post('query', { id: msgId, prompt: text, model: model });
