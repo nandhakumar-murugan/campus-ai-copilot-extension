@@ -153,6 +153,11 @@ function executeGeminiPool(prompt, apiKey, serverUrl, abortSignal, pool, index) 
   const modelName = pool[index];
 
   return new Promise((resolve) => {
+    const geminiContents = conversationHistory.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }]
+    }));
+
     const systemInstruction = {
       parts: [{
         text: `You are Campus AI Copilot, custom-engineered for the KGiSL Campus Intranet Network.\n` +
