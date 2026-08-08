@@ -88,7 +88,7 @@
       outline: none;
     }
 
-    /* History & Skills & Mesh Drawers */
+    /* Drawers */
     .history-drawer {
       display: none;
       background: #161B22;
@@ -111,7 +111,7 @@
     }
     .history-item:hover { background: #21262D; color: #00F2FE; }
 
-    /* Feed Area - FLAT & ZERO-BUBBLE */
+    /* Feed Area */
     .feed {
       flex: 1;
       overflow-y: auto;
@@ -122,14 +122,10 @@
       background: #0D1117;
     }
 
-    /* Flat Message Blocks (Zero Border Boxes) */
-    .msg-block {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-    }
+    /* Flat Message Blocks */
+    .msg-block { display: flex; flex-direction: column; width: 100%; }
 
-    /* FLAT USER PROMPT (RIGHT ALIGNED, NO BUBBLE BORDER) */
+    /* User Prompt */
     .user-block {
       align-self: flex-end;
       width: fit-content;
@@ -148,7 +144,7 @@
       text-align: right;
     }
 
-    /* FLAT AI RESPONSE CARD (BORDERLESS, MAXIMUM SPACE) */
+    /* AI Response Card */
     .ai-block {
       align-self: flex-start;
       width: 100%;
@@ -158,7 +154,7 @@
     }
     .ai-text { color: #C9D1D9; line-height: 1.55; font-size: 13px; word-break: break-word; }
 
-    /* Compact Action Toolbar */
+    /* Action Toolbar */
     .action-row { display: flex; gap: 10px; margin-top: 4px; color: #8B949E; font-size: 11px; justify-content: flex-start; opacity: 0.7; }
     .action-row:hover { opacity: 1; }
     .action-icon { cursor: pointer; transition: color 0.15s; }
@@ -197,26 +193,31 @@
     .code-head button:hover { background: #00F2FE; color: #0D1117; font-weight: 600; }
     .code-body { padding: 10px; font-family: monospace; font-size: 12px; color: #79C0FF; overflow-x: auto; line-height: 1.5; }
 
-    /* Antigravity Interactive Question Card */
-    .ask-card {
+    /* ANTIGRAVITY 2.0 FLOATING QUESTION CARD ABOVE CHATBOX */
+    .floating-ask-card {
+      display: none;
+      position: absolute;
+      bottom: 75px;
+      left: 12px;
+      right: 12px;
       background: #161B22;
-      border: 1px solid #30363D;
-      border-left: 3px solid #00F2FE;
+      border: 1px solid #00F2FE;
       border-radius: 8px;
       padding: 12px;
-      margin: 10px 0;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 242, 254, 0.25);
+      z-index: 200;
+      backdrop-filter: blur(8px);
+      animation: slideUp 0.2s ease;
     }
-    .ask-title {
-      font-weight: 700;
-      color: #F0F6FC;
-      font-size: 12px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .ask-options { display: flex; flex-direction: column; gap: 6px; }
+    @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .floating-ask-card.open { display: flex; flex-direction: column; gap: 8px; }
+    .ask-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px; }
+    .ask-title { font-weight: 700; color: #00F2FE; font-size: 12px; display: flex; align-items: center; gap: 6px; }
+    .ask-close-btn { background: transparent; border: none; color: #8B949E; cursor: pointer; font-size: 14px; }
+    .ask-close-btn:hover { color: #F85149; }
+
+    .ask-options { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
     .ask-opt-btn {
       background: #21262D;
       border: 1px solid #30363D;
@@ -231,7 +232,7 @@
       transition: all 0.15s ease;
     }
     .ask-opt-btn:hover {
-      background: rgba(0, 242, 254, 0.12);
+      background: rgba(0, 242, 254, 0.15);
       border-color: #00F2FE;
       color: #00F2FE;
     }
@@ -386,13 +387,12 @@
     </div>
   </div>
 
-  <!-- History Drawer -->
+  <!-- Drawers -->
   <div class="history-drawer" id="history-drawer">
     <div style="font-size:10px;color:#8B949E;margin-bottom:4px;font-weight:600;">PAST CHAT SESSIONS</div>
     <div id="history-list"></div>
   </div>
 
-  <!-- Skills Drawer -->
   <div class="history-drawer" id="skills-drawer">
     <div style="font-size:10px;color:#00F2FE;margin-bottom:4px;font-weight:600;">CLAUDE CODE & ANTIGRAVITY AGENTIC SKILLS</div>
     <div class="history-item" onclick="activateSkill('architecture-analyst')"><span>🏗️ Architecture Analyst</span><span style="font-size:9px;color:#00F2FE;">Activate</span></div>
@@ -402,7 +402,6 @@
     <div class="history-item" onclick="activateSkill('test-suite-generator')"><span>🧪 Test Suite Generator</span><span style="font-size:9px;color:#00F2FE;">Activate</span></div>
   </div>
 
-  <!-- Mesh Cluster Drawer -->
   <div class="history-drawer" id="mesh-drawer">
     <div style="font-size:10px;color:#00F2FE;margin-bottom:4px;font-weight:600;display:flex;justify-content:space-between;">
       <span>INTRANET P2P MESH CLUSTER</span>
@@ -417,6 +416,15 @@
     <div class="msg-block ai-block">
       <div class="ai-text">வணக்கம்! Hello! How can I help you write code or audit security today?</div>
     </div>
+  </div>
+
+  <!-- FLOATING ANTIGRAVITY 2.0 QUESTION CARD (DISAPPEARS ON SELECTION) -->
+  <div class="floating-ask-card" id="floating-ask-card">
+    <div class="ask-card-header">
+      <div class="ask-title" id="ask-title-text">🗳️ Select an option</div>
+      <button class="ask-close-btn" onclick="dismissAskCard()">✕</button>
+    </div>
+    <div class="ask-options" id="ask-options-container"></div>
   </div>
 
   <div class="footer">
@@ -506,6 +514,7 @@
       }
 
       feed.innerHTML = '<div class="msg-block ai-block"><div class="ai-text">வணக்கம்! Hello! How can I help you write code or audit security today?</div></div>';
+      dismissAskCard();
       saveChatHistory();
       renderHistoryList();
     }
@@ -607,10 +616,52 @@
       send();
     }
 
+    // FLOATING ASK CARD MODAL HANDLERS
+    function showFloatingAskCard(title, options) {
+      var card = document.getElementById('floating-ask-card');
+      var titleEl = document.getElementById('ask-title-text');
+      var container = document.getElementById('ask-options-container');
+      if (!card || !container) return;
+
+      titleEl.innerText = '🗳️ ' + title;
+      var html = '';
+      options.forEach(function(opt, idx) {
+        html += '<div class="ask-opt-btn" onclick="selectQuestionOption(\'' + encodeURIComponent(opt) + '\')">' +
+          '<span class="ask-opt-num">' + (idx + 1) + '</span>' +
+          '<span>' + escapeHtml(opt) + '</span>' +
+          '</div>';
+      });
+      container.innerHTML = html;
+      card.classList.add('open');
+    }
+
+    function dismissAskCard() {
+      var card = document.getElementById('floating-ask-card');
+      if (card) card.classList.remove('open');
+    }
+
+    function selectQuestionOption(optRaw) {
+      var text = decodeURIComponent(optRaw);
+      dismissAskCard(); // CARD DISAPPEARS IMMEDIATELY AFTER SELECTION!
+      document.getElementById('prompt').value = text;
+      send();
+    }
+
     function formatText(txt) {
       if (!txt) return '';
 
-      // 1. Antigravity File Changes Card: Modified X files +Y -Z
+      // Check for [ASK_QUESTION: Title | Opt 1 | Opt 2]
+      var askMatch = txt.match(/\[ASK_QUESTION:\s*([^|\]]+)\|(.*?)\]/);
+      if (askMatch) {
+        var title = askMatch[1].trim();
+        var rawOpts = askMatch[2].split('|').map(function(o) { return o.trim(); }).filter(Boolean);
+        setTimeout(function() {
+          showFloatingAskCard(title, rawOpts);
+        }, 100);
+        txt = txt.replace(/\[ASK_QUESTION:[\s\S]*?\]/g, ''); // Strip from message text!
+      }
+
+      // 1. Antigravity File Changes Card
       txt = txt.replace(/Modified (\d+) files \+?(\d+) \-?(\d+)/g, function(m, count, add, del) {
         return '<div style="background:#161B22;border:1px solid #30363D;border-left:3px solid #58A6FF;border-radius:6px;padding:8px 12px;margin:8px 0;font-size:12px;color:#C9D1D9;">' +
           '<div style="display:flex;justify-content:space-between;align-items:center;">' +
@@ -619,23 +670,23 @@
           '</div></div>';
       });
 
-      // 2. Antigravity Tool Step Execution Card: Executed command and checked X files
+      // 2. Tool execution step
       txt = txt.replace(/Executed command and checked (\d+) files/g, function(m, count) {
         return '<div style="background:#161B22;border:1px solid #30363D;border-radius:6px;padding:6px 10px;margin:6px 0;font-size:11px;color:#8B949E;display:flex;align-items:center;gap:6px;">' +
           '⚡ <span>Executed command and checked ' + count + ' files</span></div>';
       });
 
-      // 3. Code blocks with header and Copy / Insert / Apply to File / Create File buttons
+      // 3. Code blocks with Copy / Insert / Apply to File / Create File
       var formatted = txt.replace(/```(\w+)?\n([\s\S]*?)```/g, function(m, lang, code) {
         var esc = escapeHtml(code.trim());
         var raw = encodeURIComponent(code.trim());
         return '<div class="code-box"><div class="code-head"><span>' + (lang || 'code') + '</span><div><button onclick="copyCode(this)">Copy</button><button onclick="insertCode(\'' + raw + '\')">📥 Insert</button><button onclick="applyDiffToFile(\'' + raw + '\')" style="background:#1F6FEB;color:#FFF;">📝 Apply to File</button><button onclick="promptCreateFile(\'' + raw + '\')">✨ Create File</button></div></div><pre class="code-body"><code>' + esc + '</code></pre></div>';
       });
 
-      // 4. File Symbol Badges [JS filename.js]
+      // 4. Badges
       formatted = formatted.replace(/\[(JS|PY|HTML|CSS|TS|JSON)\s+([^\]]+)\]/g, '<span style="background:#21262D;border:1px solid #30363D;color:#58A6FF;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:11px;">📄 $2</span>');
 
-      // 5. Clean Inline Code Badges (No awkward line breaks!)
+      // 5. Clean Inline Code Badges
       formatted = formatted.replace(/`([^`]+)`/g, '<code style="background:#161B22;border:1px solid #30363D;color:#79C0FF;padding:2px 5px;border-radius:4px;font-family:monospace;font-size:11px;word-break:break-word;">$1</code>');
 
       // 6. Headers
@@ -648,33 +699,11 @@
       formatted = formatted.replace(/^\s*[\*\-] (.*$)/gim, '<li style="margin-left:14px;margin-bottom:3px;">$1</li>');
       formatted = formatted.replace(/^\s*(\d+)\. (.*$)/gim, '<div style="margin:4px 0 4px 10px;line-height:1.5;"><strong style="color:#00F2FE;">$1.</strong> $2</div>');
 
-      // 9. Antigravity Interactive Question Card [ASK_QUESTION: Title | Opt 1 | Opt 2 | Opt 3]
-      formatted = formatted.replace(/\[ASK_QUESTION:\s*([^|\]]+)\|(.*?)\]/g, function(m, title, optsRaw) {
-        var opts = optsRaw.split('|');
-        var optsHtml = '';
-        opts.forEach(function(o, idx) {
-          var cleanOpt = o.trim();
-          if (cleanOpt) {
-            optsHtml += '<div class="ask-opt-btn" onclick="selectQuestionOption(\'' + encodeURIComponent(cleanOpt) + '\')">' +
-              '<span class="ask-opt-num">' + (idx + 1) + '</span>' +
-              '<span>' + escapeHtml(cleanOpt) + '</span>' +
-              '</div>';
-          }
-        });
-
-        return '<div class="ask-card">' +
-          '<div class="ask-title">🗳️ ' + escapeHtml(title.trim()) + '</div>' +
-          '<div class="ask-options">' + optsHtml + '</div>' +
-          '</div>';
-      });
+      // 8. Clickable Web Links
+      formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#00F2FE;text-decoration:none;font-weight:600;">🌐 $1</a>');
+      formatted = formatted.replace(/^---$/gim, '<hr style="border:none;border-top:1px solid #30363D;margin:8px 0;">');
 
       return formatted;
-    }
-
-    function selectQuestionOption(optRaw) {
-      var text = decodeURIComponent(optRaw);
-      document.getElementById('prompt').value = text;
-      send();
     }
 
     function send() {
@@ -686,7 +715,6 @@
 
       var feed = document.getElementById('feed');
 
-      // FLAT USER PROMPT (NO BORDER BUBBLE)
       var uBlock = document.createElement('div');
       uBlock.className = 'msg-block user-block';
       uBlock.innerHTML = '<div class="user-text">' + escapeHtml(text) + '</div>';
@@ -696,7 +724,6 @@
       var model = modelSelect ? modelSelect.value : 'gemini-3.6-flash';
       var msgId = 'msg-' + Date.now();
 
-      // FLAT AI RESPONSE (NO BORDER BUBBLE)
       var aBlock = document.createElement('div');
       aBlock.className = 'msg-block ai-block';
       aBlock.innerHTML = '<div class="ai-text" id="' + msgId + '"><span class="cursor-blink"></span></div>' +
@@ -710,7 +737,7 @@
       feed.appendChild(aBlock);
       feed.scrollTop = feed.scrollHeight;
 
-      saveChatHistory(); // Save immediately
+      saveChatHistory();
 
       setGeneratingState(true);
       post('query', { id: msgId, prompt: text, model: model });
@@ -771,7 +798,7 @@
 
       currentTimer = setInterval(function() {
         if (index < fullText.length) {
-          index += 1; // Smooth letter-by-letter typing like ChatGPT!
+          index += 1;
           elem.innerHTML = formatText(fullText.substring(0, index)) + '<span class="cursor-blink"></span>';
           document.getElementById('feed').scrollTop = document.getElementById('feed').scrollHeight;
         } else {
@@ -823,7 +850,6 @@
       var feed = document.getElementById('feed');
       if (!feed) return;
       
-      // Do not overwrite if user has already sent messages!
       if (feed.querySelectorAll('.user-block').length > 0) return;
 
       try {
