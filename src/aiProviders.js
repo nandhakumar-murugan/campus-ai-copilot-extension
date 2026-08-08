@@ -168,22 +168,27 @@ function executeGeminiPool(prompt, apiKey, serverUrl, abortSignal, pool, index) 
           if (parsed.candidates && parsed.candidates[0] && parsed.candidates[0].content) {
             let ans = parsed.candidates[0].content.parts[0].text;
 
-            // Extract Live Online Search Grounding Citations
+            // Extract Live Online Search Grounding Citations (Only if citations exist!)
             const candidate = parsed.candidates[0];
             if (candidate.groundingMetadata) {
               const meta = candidate.groundingMetadata;
-              let citations = '\n\n---\n### 🌐 Live Web Search Sources\n';
-              if (meta.webSearchQueries && meta.webSearchQueries.length > 0) {
-                citations += `*🔍 Searched Web:* \`${meta.webSearchQueries.join('`, `')}\`\n\n`;
+              const hasQueries = meta.webSearchQueries && meta.webSearchQueries.length > 0;
+              const hasChunks = meta.groundingChunks && meta.groundingChunks.length > 0;
+
+              if (hasQueries || hasChunks) {
+                let citations = '\n\n---\n### 🌐 Live Web Search Sources\n';
+                if (hasQueries) {
+                  citations += `*🔍 Searched Web:* \`${meta.webSearchQueries.join('`, `')}\`\n\n`;
+                }
+                if (hasChunks) {
+                  meta.groundingChunks.forEach((chunk, i) => {
+                    if (chunk.web) {
+                      citations += `[${i + 1}] [${chunk.web.title || chunk.web.uri}](${chunk.web.uri})\n`;
+                    }
+                  });
+                }
+                ans += citations;
               }
-              if (meta.groundingChunks && meta.groundingChunks.length > 0) {
-                meta.groundingChunks.forEach((chunk, i) => {
-                  if (chunk.web) {
-                    citations += `[${i + 1}] [${chunk.web.title || chunk.web.uri}](${chunk.web.uri})\n`;
-                  }
-                });
-              }
-              ans += citations;
             }
 
             stats.tokens += Math.ceil(ans.length / 4);
