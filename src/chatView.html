@@ -36,7 +36,6 @@
       gap: 6px;
       letter-spacing: 0.3px;
     }
-    .author-sub { font-size: 10px; color: #8B949E; }
 
     .hdr-actions { display: flex; gap: 6px; }
     .hdr-btn {
@@ -89,7 +88,7 @@
       outline: none;
     }
 
-    /* History & Skills Drawer */
+    /* History & Skills & Mesh Drawers */
     .history-drawer {
       display: none;
       background: #161B22;
@@ -123,22 +122,51 @@
       background: #0D1117;
     }
 
-    /* Message Cards */
-    .msg-block { display: flex; flex-direction: column; gap: 6px; }
+    /* Message Containers */
+    .msg-block {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+
+    /* RIGHT-ALIGNED USER CHAT BUBBLE */
     .user-block {
-      background: rgba(255, 255, 255, 0.03);
+      align-self: flex-end;
+      max-width: 85%;
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(31, 111, 235, 0.2));
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      border-radius: 14px 14px 2px 14px;
+      padding: 10px 14px;
+      box-shadow: 0 4px 12px rgba(0, 242, 254, 0.08);
+    }
+    .user-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #00F2FE;
+      margin-bottom: 4px;
+      text-align: right;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .user-text { color: #F0F6FC; font-size: 13px; line-height: 1.45; word-break: break-word; }
+
+    /* LEFT-ALIGNED AI RESPONSE CARD */
+    .ai-block {
+      align-self: flex-start;
+      width: 100%;
+      background: rgba(22, 27, 34, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-left: 3px solid #00F2FE;
-      border-radius: 6px;
-      padding: 10px 12px;
+      border-radius: 12px;
+      padding: 12px 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     }
-    .user-title { font-size: 11px; font-weight: 600; color: #8B949E; margin-bottom: 2px; }
-    .user-text { color: #F0F6FC; font-size: 13px; line-height: 1.45; }
     .ai-title { font-size: 12px; font-weight: 700; color: #00F2FE; display: flex; align-items: center; gap: 6px; }
     .ai-text { color: #C9D1D9; line-height: 1.55; font-size: 13px; word-break: break-word; }
 
     /* Action Icons */
-    .action-row { display: flex; gap: 12px; margin-top: 6px; color: #8B949E; font-size: 12px; }
+    .action-row { display: flex; gap: 12px; margin-top: 8px; color: #8B949E; font-size: 12px; }
     .action-icon { cursor: pointer; transition: color 0.15s; }
     .action-icon:hover { color: #00F2FE; }
 
@@ -341,7 +369,7 @@
   </div>
 
   <div class="feed" id="feed">
-    <div class="msg-block">
+    <div class="msg-block ai-block">
       <div class="ai-title">⚡ Campus AI Copilot</div>
       <div class="ai-text">வணக்கம்! Hello! How can I help you write code or audit security today?</div>
     </div>
@@ -417,7 +445,9 @@
     function toggleHistoryDrawer() {
       var drawer = document.getElementById('history-drawer');
       var skillsDrawer = document.getElementById('skills-drawer');
+      var meshDrawer = document.getElementById('mesh-drawer');
       if (skillsDrawer) skillsDrawer.classList.remove('open');
+      if (meshDrawer) meshDrawer.classList.remove('open');
       if (drawer) drawer.classList.toggle('open');
       renderHistoryList();
     }
@@ -431,7 +461,7 @@
         localStorage.setItem('campus_sessions', JSON.stringify(chatSessions));
       }
 
-      feed.innerHTML = '<div class="msg-block"><div class="ai-title">⚡ Campus AI Copilot</div><div class="ai-text">வணக்கம்! Hello! How can I help you write code or audit security today?</div></div>';
+      feed.innerHTML = '<div class="msg-block ai-block"><div class="ai-title">⚡ Campus AI Copilot</div><div class="ai-text">வணக்கம்! Hello! How can I help you write code or audit security today?</div></div>';
       saveChatHistory();
       renderHistoryList();
     }
@@ -582,17 +612,19 @@
 
       var feed = document.getElementById('feed');
 
+      // RIGHT-ALIGNED USER CHAT BUBBLE
       var uBlock = document.createElement('div');
       uBlock.className = 'msg-block user-block';
-      uBlock.innerHTML = '<div class="user-title">User</div><div class="user-text">' + escapeHtml(text) + '</div>';
+      uBlock.innerHTML = '<div class="user-title">YOU</div><div class="user-text">' + escapeHtml(text) + '</div>';
       feed.appendChild(uBlock);
 
       var modelSelect = document.getElementById('model');
       var model = modelSelect ? modelSelect.value : 'gemini-3.6-flash';
       var msgId = 'msg-' + Date.now();
 
+      // LEFT-ALIGNED AI RESPONSE CARD
       var aBlock = document.createElement('div');
-      aBlock.className = 'msg-block';
+      aBlock.className = 'msg-block ai-block';
       aBlock.innerHTML = '<div class="ai-title">⚡ Campus AI Copilot</div>' +
         '<div class="ai-text" id="' + msgId + '"><span class="cursor-blink"></span></div>' +
         '<div class="action-row">' +
