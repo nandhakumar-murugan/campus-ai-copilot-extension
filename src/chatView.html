@@ -637,6 +637,8 @@
       feed.appendChild(aBlock);
       feed.scrollTop = feed.scrollHeight;
 
+      saveChatHistory(); // Save immediately so 'hi' is never lost!
+
       setGeneratingState(true);
       post('query', { id: msgId, prompt: text, model: model });
     }
@@ -742,15 +744,22 @@
       } catch (e) {}
     }
 
+    var isHistoryRestored = false;
     function restoreChatHistory() {
+      if (isHistoryRestored) return;
       var feed = document.getElementById('feed');
       if (!feed) return;
+      
+      // Do not overwrite if user has already sent messages!
+      if (feed.querySelectorAll('.user-block').length > 0) return;
+
       try {
         var state = vscode.getState();
         var savedHtml = (state && state.html) || localStorage.getItem('campus_chat_history');
         if (savedHtml && savedHtml.trim().length > 50) {
           feed.innerHTML = savedHtml;
           feed.scrollTop = feed.scrollHeight;
+          isHistoryRestored = true;
         }
       } catch (e) {}
     }

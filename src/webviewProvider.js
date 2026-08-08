@@ -116,19 +116,23 @@ class CampusAiChatViewProvider {
             fullPrompt = `${wsContext}\n[USER QUESTION]\n${message.prompt}`;
           }
 
-          let answer;
-          if (message.command === 'runGoal' || message.prompt.startsWith('/goal')) {
-            const cleanGoal = message.prompt.replace(/^\/goal\s*/, '').trim() || 'Create a full stack web application';
-            answer = await runAutonomousGoal(cleanGoal, message.model, serverUrl, webviewView.webview, this._abortController.signal);
-          } else if (message.command === 'deepResearch' || message.prompt.startsWith('/research')) {
-            const cleanTopic = message.prompt.replace(/^\/research\s*/, '').trim() || 'Project Architecture & Optimizations';
-            answer = await deepResearch(cleanTopic, message.model, serverUrl, this._abortController.signal);
-          } else {
-            answer = await queryAi(fullPrompt, message.model, serverUrl, this._abortController.signal);
+          try {
+            let answer;
+            if (message.command === 'runGoal' || message.prompt.startsWith('/goal')) {
+              const cleanGoal = message.prompt.replace(/^\/goal\s*/, '').trim() || 'Create a full stack web application';
+              answer = await runAutonomousGoal(cleanGoal, message.model, serverUrl, webviewView.webview, this._abortController.signal);
+            } else if (message.command === 'deepResearch' || message.prompt.startsWith('/research')) {
+              const cleanTopic = message.prompt.replace(/^\/research\s*/, '').trim() || 'Project Architecture & Optimizations';
+              answer = await deepResearch(cleanTopic, message.model, serverUrl, this._abortController.signal);
+            } else {
+              answer = await queryAi(fullPrompt, message.model, serverUrl, this._abortController.signal);
+            }
+            
+            webviewView.webview.postMessage({ command: 'response', id: message.id, text: answer });
+            webviewView.webview.postMessage({ command: 'stats', ...getStats() });
+          } catch (err) {
+            webviewView.webview.postMessage({ command: 'response', id: message.id, text: `⚠️ **Campus AI Error:** ${err.message || 'Unable to connect to AI server.'}\n\nPlease check your network connection or API Key setting.` });
           }
-          
-          webviewView.webview.postMessage({ command: 'response', id: message.id, text: answer });
-          webviewView.webview.postMessage({ command: 'stats', ...getStats() });
         } else if (message.command === 'cancelQuery') {
           if (this._abortController) {
             this._abortController.abort();
