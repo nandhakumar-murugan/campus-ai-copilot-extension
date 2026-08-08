@@ -111,54 +111,56 @@
     }
     .history-item:hover { background: #21262D; color: #00F2FE; }
 
-    /* Feed Area */
+    /* Feed Area - FLAT & ZERO-BUBBLE */
     .feed {
       flex: 1;
       overflow-y: auto;
-      padding: 12px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       background: #0D1117;
     }
 
-    /* Message Containers */
+    /* Flat Message Blocks (Zero Border Boxes) */
     .msg-block {
       display: flex;
       flex-direction: column;
-      gap: 4px;
       width: 100%;
     }
 
-    /* MINIMALIST RIGHT-ALIGNED USER BUBBLE */
+    /* FLAT USER PROMPT (RIGHT ALIGNED, NO BUBBLE BORDER) */
     .user-block {
       align-self: flex-end;
       width: fit-content;
-      max-width: 85%;
-      background: linear-gradient(135deg, rgba(0, 242, 254, 0.18), rgba(31, 111, 235, 0.25));
-      border: 1px solid rgba(0, 242, 254, 0.4);
-      border-radius: 14px 14px 2px 14px;
-      padding: 8px 12px;
-      box-shadow: 0 4px 12px rgba(0, 242, 254, 0.1);
+      max-width: 90%;
+      background: transparent;
+      border: none;
+      padding: 4px 0;
       margin-left: auto;
     }
-    .user-text { color: #F0F6FC; font-size: 13px; line-height: 1.45; word-break: break-word; }
+    .user-text {
+      color: #00F2FE;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.4;
+      word-break: break-word;
+      text-align: right;
+    }
 
-    /* MINIMALIST LEFT-ALIGNED AI RESPONSE CARD */
+    /* FLAT AI RESPONSE CARD (BORDERLESS, MAXIMUM SPACE) */
     .ai-block {
       align-self: flex-start;
       width: 100%;
-      background: rgba(22, 27, 34, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-left: 3px solid #00F2FE;
-      border-radius: 8px;
-      padding: 10px 12px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      background: transparent;
+      border: none;
+      padding: 4px 0;
     }
     .ai-text { color: #C9D1D9; line-height: 1.55; font-size: 13px; word-break: break-word; }
 
     /* Compact Action Toolbar */
-    .action-row { display: flex; gap: 10px; margin-top: 6px; color: #8B949E; font-size: 11px; justify-content: flex-end; }
+    .action-row { display: flex; gap: 10px; margin-top: 4px; color: #8B949E; font-size: 11px; justify-content: flex-start; opacity: 0.7; }
+    .action-row:hover { opacity: 1; }
     .action-icon { cursor: pointer; transition: color 0.15s; }
     .action-icon:hover { color: #00F2FE; }
 
@@ -166,10 +168,9 @@
     .code-box {
       background: #161B22;
       border: 1px solid #30363D;
-      border-radius: 8px;
-      margin: 8px 0;
+      border-radius: 6px;
+      margin: 6px 0;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
     .code-head {
       background: #21262D;
@@ -603,7 +604,7 @@
 
       var feed = document.getElementById('feed');
 
-      // MINIMALIST RIGHT-ALIGNED USER CHAT BUBBLE (NO REPETITIVE TITLE)
+      // FLAT USER PROMPT (NO BORDER BUBBLE)
       var uBlock = document.createElement('div');
       uBlock.className = 'msg-block user-block';
       uBlock.innerHTML = '<div class="user-text">' + escapeHtml(text) + '</div>';
@@ -613,7 +614,7 @@
       var model = modelSelect ? modelSelect.value : 'gemini-3.6-flash';
       var msgId = 'msg-' + Date.now();
 
-      // MINIMALIST LEFT-ALIGNED AI RESPONSE CARD (NO REPETITIVE TITLE)
+      // FLAT AI RESPONSE (NO BORDER BUBBLE)
       var aBlock = document.createElement('div');
       aBlock.className = 'msg-block ai-block';
       aBlock.innerHTML = '<div class="ai-text" id="' + msgId + '"><span class="cursor-blink"></span></div>' +
