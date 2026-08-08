@@ -286,6 +286,7 @@
     <div class="brand-row">
       <div class="brand">⚡ Campus AI Copilot</div>
       <div class="hdr-actions">
+        <button class="hdr-btn" id="hdr-mesh-btn" onclick="toggleMeshDrawer()">🌐 Mesh (1)</button>
         <button class="hdr-btn" onclick="toggleSkillsDrawer()">🧩 Skills</button>
         <button class="hdr-btn" onclick="startNewChat()">➕ New Chat</button>
         <button class="hdr-btn" onclick="toggleHistoryDrawer()">📜 History</button>
@@ -326,6 +327,17 @@
     <div class="history-item" onclick="activateSkill('fullstack-builder')"><span>🚀 Full Stack Builder</span><span style="font-size:9px;color:#00F2FE;">Activate</span></div>
     <div class="history-item" onclick="activateSkill('refactor-engineer')"><span>⚡ Refactor Engineer</span><span style="font-size:9px;color:#00F2FE;">Activate</span></div>
     <div class="history-item" onclick="activateSkill('test-suite-generator')"><span>🧪 Test Suite Generator</span><span style="font-size:9px;color:#00F2FE;">Activate</span></div>
+  </div>
+
+  <!-- Mesh Cluster Drawer -->
+  <div class="history-drawer" id="mesh-drawer">
+    <div style="font-size:10px;color:#00F2FE;margin-bottom:4px;font-weight:600;display:flex;justify-content:space-between;">
+      <span>INTRANET P2P MESH CLUSTER</span>
+      <span id="mesh-totals">RAM: 16GB | VRAM: 8GB</span>
+    </div>
+    <div id="mesh-node-list">
+      <div class="history-item"><span>💻 Host Node (Local)</span><span style="font-size:9px;color:#3FB950;">ONLINE (1ms)</span></div>
+    </div>
   </div>
 
   <div class="feed" id="feed">
@@ -374,10 +386,21 @@
       vscode.postMessage(Object.assign({ command: cmd }, extra || {}));
     }
 
+    function toggleMeshDrawer() {
+      var drawer = document.getElementById('mesh-drawer');
+      var histDrawer = document.getElementById('history-drawer');
+      var skillsDrawer = document.getElementById('skills-drawer');
+      if (histDrawer) histDrawer.classList.remove('open');
+      if (skillsDrawer) skillsDrawer.classList.remove('open');
+      if (drawer) drawer.classList.toggle('open');
+    }
+
     function toggleSkillsDrawer() {
       var drawer = document.getElementById('skills-drawer');
       var histDrawer = document.getElementById('history-drawer');
+      var meshDrawer = document.getElementById('mesh-drawer');
       if (histDrawer) histDrawer.classList.remove('open');
+      if (meshDrawer) meshDrawer.classList.remove('open');
       if (drawer) drawer.classList.toggle('open');
     }
 
@@ -612,6 +635,20 @@
       } else if (msg && msg.command === 'stats') {
         document.getElementById('stat-reqs').innerText = msg.requests;
         document.getElementById('stat-tokens').innerText = msg.tokens;
+      } else if (msg && msg.command === 'meshStats') {
+        var btn = document.getElementById('hdr-mesh-btn');
+        if (btn) btn.innerText = '🌐 Mesh (' + msg.activeNodes + ')';
+        var totals = document.getElementById('mesh-totals');
+        if (totals) totals.innerText = 'RAM: ' + msg.totalRamGB + 'GB | VRAM: ' + msg.totalVramGB + 'GB';
+        
+        var listEl = document.getElementById('mesh-node-list');
+        if (listEl && msg.nodes) {
+          var html = '';
+          msg.nodes.forEach(function(n) {
+            html += '<div class="history-item"><span>💻 ' + escapeHtml(n.name) + ' (' + n.ip + ')</span><span style="font-size:9px;color:#3FB950;">ONLINE (' + n.latencyMs + 'ms)</span></div>';
+          });
+          listEl.innerHTML = html;
+        }
       }
     });
 

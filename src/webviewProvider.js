@@ -7,11 +7,14 @@ const { runAutonomousGoal } = require('./goalRunner');
 const { getSkillPrompt } = require('./skillsManager');
 const { executeTool } = require('./toolBridge');
 
+const meshCluster = require('./meshCluster');
+
 class CampusAiChatViewProvider {
   constructor(extensionUri, getServerUrl) {
     this._extensionUri = extensionUri;
     this._getServerUrl = getServerUrl;
     this._abortController = null;
+    meshCluster.startAutoDiscovery();
   }
 
   resolveWebviewView(webviewView) {
@@ -20,6 +23,14 @@ class CampusAiChatViewProvider {
       enableCommandUris: true,
       localResourceRoots: [this._extensionUri]
     };
+
+    // Broadcast Mesh Cluster summary telemetry every 10s
+    setInterval(() => {
+      webviewView.webview.postMessage({
+        command: 'meshStats',
+        ...meshCluster.getClusterSummary()
+      });
+    }, 10000);
 
     const htmlPath = path.join(this._extensionUri.fsPath, 'src', 'chatView.html');
     webviewView.webview.html = fs.readFileSync(htmlPath, 'utf8');
