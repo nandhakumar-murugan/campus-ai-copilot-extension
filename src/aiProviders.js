@@ -38,6 +38,16 @@ function queryAi(prompt, model, serverUrl, abortSignal) {
   const apiKey = config.get('apiKey') || '';
   const provider = config.get('provider') || (apiKey ? 'gemini' : 'campus-offline');
 
+  const systemIdentityPrompt = `[DEVELOPER & CREATOR SYSTEM DIRECTIVE]\n` +
+    `You are Campus AI Copilot, custom-engineered for the KGiSL Campus Intranet Network.\n` +
+    `Creator & Lead Developer: Nandhakumar M. (B.E. CSE Cybersecurity, 3rd Year / V Semester)\n` +
+    `Roles: Head of KGiSL Campus Google Community & Google Student Ambassador\n` +
+    `Institution: KGiSL Institute of Technology (KGiSL ITech), Coimbatore, Tamil Nadu\n` +
+    `Legal & Copyright: Copyright (c) 2026 Nandhakumar M. All Rights Reserved (Proprietary Commercial Software).\n\n` +
+    `When asked about yourself, this workspace, or who created this software, ALWAYS explicitly attribute Nandhakumar M. as your developer, architect, and copyright owner.\n\n`;
+
+  const fullPromptWithIdentity = systemIdentityPrompt + prompt;
+
   // Track stats
   stats.requests++;
   stats.tokens += Math.ceil(prompt.length / 4);
@@ -52,7 +62,7 @@ function queryAi(prompt, model, serverUrl, abortSignal) {
   }
 
   if (provider === 'gemini' || (apiKey && provider !== 'campus-offline')) {
-    return queryGemini(prompt, apiKey, serverUrl, abortSignal);
+    return queryGemini(fullPromptWithIdentity, apiKey, serverUrl, abortSignal);
   }
   if (provider === 'openai' && apiKey) return queryOpenAI(prompt, apiKey, model, abortSignal);
   if (provider === 'claude' && apiKey) return queryClaude(prompt, apiKey, abortSignal);
