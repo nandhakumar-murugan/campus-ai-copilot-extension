@@ -583,14 +583,22 @@
       // 4. File Symbol Badges [JS filename.js]
       formatted = formatted.replace(/\[(JS|PY|HTML|CSS|TS|JSON)\s+([^\]]+)\]/g, '<span style="background:#21262D;border:1px solid #30363D;color:#58A6FF;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:11px;">📄 $2</span>');
 
-      formatted = formatted.replace(/`([^`]+)`/g, '<code style="background:rgba(0,242,254,0.15);padding:2px 6px;border-radius:4px;font-family:monospace;color:#00F2FE;">$1</code>');
-      formatted = formatted.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-      formatted = formatted.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-      formatted = formatted.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-      formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-      formatted = formatted.replace(/^\s*[\*\-] (.*$)/gim, '<li>$1</li>');
+      // 5. Clean Inline Code Badges (No awkward line breaks!)
+      formatted = formatted.replace(/`([^`]+)`/g, '<code style="background:#161B22;border:1px solid #30363D;color:#79C0FF;padding:2px 5px;border-radius:4px;font-family:monospace;font-size:11px;word-break:break-word;">$1</code>');
+
+      // 6. Headers
+      formatted = formatted.replace(/^### (.*$)/gim, '<h3 style="color:#00F2FE;margin:10px 0 4px 0;font-size:13px;font-weight:700;">$1</h3>');
+      formatted = formatted.replace(/^## (.*$)/gim, '<h2 style="color:#00F2FE;margin:12px 0 6px 0;font-size:14px;font-weight:700;">$1</h2>');
+      formatted = formatted.replace(/^# (.*$)/gim, '<h1 style="color:#00F2FE;margin:14px 0 8px 0;font-size:15px;font-weight:700;">$1</h1>');
+
+      // 7. Bold & Lists
+      formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong style="color:#F0F6FC;font-weight:600;">$1</strong>');
+      formatted = formatted.replace(/^\s*[\*\-] (.*$)/gim, '<li style="margin-left:14px;margin-bottom:3px;">$1</li>');
+      formatted = formatted.replace(/^\s*(\d+)\. (.*$)/gim, '<div style="margin:4px 0 4px 10px;line-height:1.5;"><strong style="color:#00F2FE;">$1.</strong> $2</div>');
+
+      // 8. Clickable Web Links
       formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#00F2FE;text-decoration:none;font-weight:600;">🌐 $1</a>');
-      formatted = formatted.replace(/^---$/gim, '<hr style="border:none;border-top:1px solid #30363D;margin:6px 0;">');
+      formatted = formatted.replace(/^---$/gim, '<hr style="border:none;border-top:1px solid #30363D;margin:8px 0;">');
 
       return formatted;
     }
