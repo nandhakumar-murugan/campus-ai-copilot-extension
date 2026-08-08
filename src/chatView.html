@@ -197,6 +197,58 @@
     .code-head button:hover { background: #00F2FE; color: #0D1117; font-weight: 600; }
     .code-body { padding: 10px; font-family: monospace; font-size: 12px; color: #79C0FF; overflow-x: auto; line-height: 1.5; }
 
+    /* Antigravity Interactive Question Card */
+    .ask-card {
+      background: #161B22;
+      border: 1px solid #30363D;
+      border-left: 3px solid #00F2FE;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+    .ask-title {
+      font-weight: 700;
+      color: #F0F6FC;
+      font-size: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ask-options { display: flex; flex-direction: column; gap: 6px; }
+    .ask-opt-btn {
+      background: #21262D;
+      border: 1px solid #30363D;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 11px;
+      color: #C9D1D9;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s ease;
+    }
+    .ask-opt-btn:hover {
+      background: rgba(0, 242, 254, 0.12);
+      border-color: #00F2FE;
+      color: #00F2FE;
+    }
+    .ask-opt-num {
+      background: #30363D;
+      color: #F0F6FC;
+      font-weight: 700;
+      font-size: 10px;
+      border-radius: 4px;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
     /* Slash Menu */
     .slash-menu {
       display: none;
@@ -596,11 +648,33 @@
       formatted = formatted.replace(/^\s*[\*\-] (.*$)/gim, '<li style="margin-left:14px;margin-bottom:3px;">$1</li>');
       formatted = formatted.replace(/^\s*(\d+)\. (.*$)/gim, '<div style="margin:4px 0 4px 10px;line-height:1.5;"><strong style="color:#00F2FE;">$1.</strong> $2</div>');
 
-      // 8. Clickable Web Links
-      formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" style="color:#00F2FE;text-decoration:none;font-weight:600;">🌐 $1</a>');
-      formatted = formatted.replace(/^---$/gim, '<hr style="border:none;border-top:1px solid #30363D;margin:8px 0;">');
+      // 9. Antigravity Interactive Question Card [ASK_QUESTION: Title | Opt 1 | Opt 2 | Opt 3]
+      formatted = formatted.replace(/\[ASK_QUESTION:\s*([^|\]]+)\|(.*?)\]/g, function(m, title, optsRaw) {
+        var opts = optsRaw.split('|');
+        var optsHtml = '';
+        opts.forEach(function(o, idx) {
+          var cleanOpt = o.trim();
+          if (cleanOpt) {
+            optsHtml += '<div class="ask-opt-btn" onclick="selectQuestionOption(\'' + encodeURIComponent(cleanOpt) + '\')">' +
+              '<span class="ask-opt-num">' + (idx + 1) + '</span>' +
+              '<span>' + escapeHtml(cleanOpt) + '</span>' +
+              '</div>';
+          }
+        });
+
+        return '<div class="ask-card">' +
+          '<div class="ask-title">🗳️ ' + escapeHtml(title.trim()) + '</div>' +
+          '<div class="ask-options">' + optsHtml + '</div>' +
+          '</div>';
+      });
 
       return formatted;
+    }
+
+    function selectQuestionOption(optRaw) {
+      var text = decodeURIComponent(optRaw);
+      document.getElementById('prompt').value = text;
+      send();
     }
 
     function send() {
