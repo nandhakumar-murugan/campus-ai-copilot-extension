@@ -341,7 +341,31 @@
       transition: all 0.15s ease;
     }
     .btn-submit:hover { background: #38F9D7; transform: scale(1.05); }
-    .btn-stop { background: #DA3633 !important; color: #FFF !important; }
+    .btn-stop {
+      background: linear-gradient(135deg, #F85149, #DA3633) !important;
+      color: #FFF !important;
+      animation: pulseStop 0.8s infinite alternate !important;
+      box-shadow: 0 0 10px rgba(248, 81, 73, 0.8) !important;
+    }
+    @keyframes pulseStop { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
+
+    .running-status-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, rgba(0, 242, 254, 0.15), rgba(79, 172, 254, 0.15));
+      border: 1px solid #00F2FE;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 11px;
+      color: #00F2FE;
+      font-weight: 600;
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+    .running-status-bar.active { display: flex; }
+    .spinner-icon { display: inline-block; animation: spin 1.2s infinite linear; font-size: 12px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes pulseGlow { 0% { box-shadow: 0 0 4px rgba(0, 242, 254, 0.3); } 100% { box-shadow: 0 0 12px rgba(0, 242, 254, 0.8); } }
 
     .cursor-blink {
       display: inline-block;
@@ -445,6 +469,10 @@
       <span class="chip" onclick="quick('@workspace tell about this project')">🌐 @workspace</span>
       <span class="chip" onclick="quick('/explain the selected code')">🧠 /explain</span>
       <span class="chip" onclick="quick('/fix all diagnostic errors')">🔧 /fix</span>
+    </div>
+    <div class="running-status-bar" id="running-status-bar">
+      <span><span class="spinner-icon">⚙️</span> <span id="running-status-text">⚡ Antigravity AI Agent is running...</span></span>
+      <span style="font-size:9px;color:#F85149;cursor:pointer;" onclick="handleSubmit()">⏹ Stop</span>
     </div>
     <div class="input-box-wrap">
       <textarea id="prompt" placeholder="Ask Copilot or type / for commands..." onkeydown="handleKey(event)"></textarea>
@@ -603,14 +631,25 @@
     function setGeneratingState(generating) {
       isGenerating = generating;
       var btn = document.getElementById('btn-submit');
+      var bar = document.getElementById('running-status-bar');
+      var area = document.getElementById('prompt');
+
       if (generating) {
-        btn.innerText = '⏹';
-        btn.classList.add('btn-stop');
-        btn.title = 'Stop Generation';
+        if (btn) {
+          btn.innerHTML = '⏹';
+          btn.classList.add('btn-stop');
+          btn.title = 'Stop Generation (AI Agent is Running)';
+        }
+        if (bar) bar.classList.add('active');
+        if (area) area.placeholder = '⚡ Antigravity AI Agent is working... Click ⏹ Stop to cancel';
       } else {
-        btn.innerText = '↑';
-        btn.classList.remove('btn-stop');
-        btn.title = 'Send';
+        if (btn) {
+          btn.innerHTML = '↑';
+          btn.classList.remove('btn-stop');
+          btn.title = 'Send Prompt';
+        }
+        if (bar) bar.classList.remove('active');
+        if (area) area.placeholder = 'Ask Copilot or type / for commands...';
       }
     }
 
@@ -807,8 +846,9 @@
         } else {
           clearInterval(currentTimer);
           currentTimer = null;
-          elem.innerHTML = formatText(fullText);
-          setGeneratingState(false);
+          if (fullText.indexOf('🎉 GOAL 100%') !== -1 || fullText.indexOf('⏳ *Executing Step') === -1) {
+            setGeneratingState(false);
+          }
           saveChatHistory();
         }
       }, 12);
