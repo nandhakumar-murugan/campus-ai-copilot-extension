@@ -21,7 +21,9 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
   const planningPrompt = `[AUTONOMOUS GOAL AGENT - PLANNING PHASE]\n` +
     `Goal: "${goalPrompt}"\n` +
     `Workspace: ${rootName}\n\n` +
-    `Break this goal down into 4-6 specific actionable steps. For each step, specify files to create/update. Return JSON array format:\n` +
+    `Break this goal down into 4-6 specific actionable steps. For each step, specify ONE single file to create/update.\n` +
+    `CRITICAL RULE: Each step MUST specify EXACTLY ONE single filename in "filename" (e.g. "index.html" or "styles.css" or "server.js" or "package.json"). NEVER put multiple filenames or commas in "filename".\n` +
+    `Return JSON array format:\n` +
     `[{"step": 1, "description": "...", "filename": "index.html", "instruction": "..."}]`;
 
   const planResultRaw = await queryAi(planningPrompt, model, serverUrl, abortSignal);
@@ -39,6 +41,17 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
     ];
   }
 
+  // Sanitize filenames in plan to guarantee single clean filename per step
+  plan = plan.map(p => {
+    let fn = (p.filename || 'script.js').split(',')[0].trim();
+    if (fn.includes('html')) fn = 'index.html';
+    else if (fn.includes('css')) fn = 'style.css';
+    else if (fn.includes('json')) fn = 'package.json';
+    else if (fn.includes('server')) fn = 'server.js';
+    else if (fn.includes('script') || fn.includes('app')) fn = 'script.js';
+    return { ...p, filename: fn };
+  });
+
   reportLogs += `### 📋 Execution Plan (${plan.length} Steps)\n`;
   plan.forEach(p => {
     reportLogs += `- **Step ${p.step}**: ${p.description} (\`${p.filename}\`)\n`;
@@ -53,6 +66,8 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
     }
 
     const stepItem = plan[i];
+    const targetFilename = stepItem.filename;
+
     webview.postMessage({
       command: 'response',
       id: targetMsgId,
@@ -62,15 +77,15 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
     const stepPrompt = `[AUTONOMOUS AGENT - STEP ${stepItem.step}/${plan.length}]\n` +
       `Goal: "${goalPrompt}"\n` +
       `Step Task: ${stepItem.description}\n` +
-      `Target File: ${stepItem.filename}\n` +
+      `Target File: ${targetFilename}\n` +
       `Instruction: ${stepItem.instruction}\n\n` +
-      `Generate complete, production-ready code for ${stepItem.filename}. Return ONLY raw code without explanations.`;
+      `Generate complete, production-ready code for ${targetFilename}. Return ONLY raw code without explanations.`;
 
     const codeRaw = await queryAi(stepPrompt, model, serverUrl, abortSignal);
     const cleanCode = codeRaw.replace(/```[a-z]*\n?/gi, '').replace(/```/g, '').trim();
 
     if (cleanCode) {
-      const targetPath = path.join(rootPath, stepItem.filename);
+      const targetPath = path.join(rootPath, targetFilename);
       fs.mkdirSync(path.dirname(targetPath), { recursive: true });
       fs.writeFileSync(targetPath, cleanCode, 'utf8');
 
@@ -80,7 +95,7 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
         await vscode.window.showTextDocument(doc, { preview: false, preserveFocus: true });
       } catch (e) {}
 
-      reportLogs += `\n\n- ✅ **Step ${stepItem.step}/${plan.length} Completed**: \`${stepItem.filename}\` created, written & opened in editor!\n`;
+      reportLogs += `\n- ✅ **Step ${stepItem.step}/${plan.length} Completed**: \`${targetFilename}\` created, written & opened in editor!\n`;
     }
   }
 
