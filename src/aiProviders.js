@@ -133,12 +133,11 @@ function queryCampusLocal(prompt, model, serverUrl, abortSignal) {
 
 function queryGemini(prompt, apiKey, serverUrl, abortSignal, targetModel) {
   const modelPool = [
-    targetModel || 'gemini-3.6-flash',
-    'gemini-3.5-flash',
-    'gemini-3.1-flash-lite',
-    'gemini-3.5-flash-lite',
-    'gemini-2.5-flash-lite',
-    'gemini-2.5-flash'
+    targetModel || 'gemini-2.5-flash',
+    'gemini-1.5-flash',
+    'gemini-2.0-flash',
+    'gemini-2.5-pro',
+    'gemini-1.5-pro'
   ];
 
   return executeGeminiPool(prompt, apiKey, serverUrl, abortSignal, modelPool, 0);
@@ -224,9 +223,19 @@ function executeGeminiPool(prompt, apiKey, serverUrl, abortSignal, pool, index) 
             const nextRes = await executeGeminiPool(prompt, apiKey, serverUrl, abortSignal, pool, index + 1);
             resolve(nextRes);
           } else {
-            const errText = parsed.error ? parsed.error.message : body;
-            const fallbackAns = await queryCampusLocal(prompt, 'qwen-2.5-coder', serverUrl, abortSignal);
-            resolve(`⚠️ **${modelName} Notice**: ${errText}\n\n*Campus Local AI Response:*\n\n${fallbackAns}`);
+            console.log(`[!] ${modelName} returned error: ${body}. Trying next model in pool...`);
+            if (index + 1 < pool.length) {
+              const nextRes = await executeGeminiPool(prompt, apiKey, serverUrl, abortSignal, pool, index + 1);
+              resolve(nextRes);
+            } else {
+              const errText = parsed.error ? parsed.error.message : body;
+              if (apiKey) {
+                resolve(`⚠️ **Google Gemini API Notice**: ${errText}\n\nPlease verify your Gemini API key using \`Ctrl + Shift + P\` -> \`Campus AI: Set Gemini API Key\`.`);
+              } else {
+                const fallbackAns = await queryCampusLocal(prompt, 'qwen-2.5-coder', serverUrl, abortSignal);
+                resolve(fallbackAns);
+              }
+            }
           }
         } catch (e) {
           const nextRes = await executeGeminiPool(prompt, apiKey, serverUrl, abortSignal, pool, index + 1);
