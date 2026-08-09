@@ -680,7 +680,7 @@
       });
 
       // 3. Code blocks with Copy / Insert / Apply to File / Create File
-      var formatted = txt.replace(/```(\w+)?\n([\s\S]*?)```/g, function(m, lang, code) {
+      var formatted = txt.replace(/```([\w.\-\/\\]*)[^\n]*\n([\s\S]*?)```/g, function(m, lang, code) {
         var esc = escapeHtml(code.trim());
         var raw = encodeURIComponent(code.trim());
         return '<div class="code-box"><div class="code-head"><span>' + (lang || 'code') + '</span><div><button onclick="copyCode(this)">Copy</button><button onclick="insertCode(\'' + raw + '\')">📥 Insert</button><button onclick="applyDiffToFile(\'' + raw + '\')" style="background:#1F6FEB;color:#FFF;">📝 Apply to File</button><button onclick="promptCreateFile(\'' + raw + '\')">✨ Create File</button></div></div><pre class="code-body"><code>' + esc + '</code></pre></div>';

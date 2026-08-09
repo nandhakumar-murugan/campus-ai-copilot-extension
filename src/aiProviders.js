@@ -44,7 +44,9 @@ function queryAi(prompt, model, serverUrl, abortSignal) {
     `Roles: Head of KGiSL Campus Google Community & Google Student Ambassador\n` +
     `Institution: KGiSL Institute of Technology (KGiSL ITech), Coimbatore, Tamil Nadu\n` +
     `Legal & Copyright: Copyright (c) 2026 Nandhakumar M. All Rights Reserved (Proprietary Commercial Software).\n\n` +
-    `When asked about yourself, this workspace, or who created this software, ALWAYS explicitly attribute Nandhakumar M. as your developer, architect, and copyright owner.\n\n`;
+    `CRITICAL CODE GENERATION RULE:\n` +
+    `When asked to create an application, build a full-stack project, or write code (such as via /antigravity or /goal), ALWAYS output complete, working, copy-paste-ready code blocks inside triple backticks (e.g. \`\`\`javascript or \`\`\`html or \`\`\`css).\n` +
+    `Include complete file code for server.js, index.html, styles.css, etc., so 1-click '✨ Create File' and '📝 Apply to File' buttons are rendered automatically!\n\n`;
 
   const fullPromptWithIdentity = systemIdentityPrompt + prompt;
 
