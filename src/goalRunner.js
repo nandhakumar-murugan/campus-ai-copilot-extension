@@ -18,11 +18,25 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
   // Step 1: Plan Sub-Tasks
   webview.postMessage({ command: 'response', id: targetMsgId, text: reportLogs + '📋 *Step 1/5: Synthesizing multi-step execution plan...*' });
 
+  // Inspect existing files in workspace to provide context to planner & generator
+  let existingFilesContext = '';
+  try {
+    const existingFileNames = ['index.html', 'style.css', 'script.js', 'server.js', 'package.json'].filter(f => fs.existsSync(path.join(rootPath, f)));
+    if (existingFileNames.length > 0) {
+      existingFilesContext += `\n[EXISTING WORKSPACE FILES FOUND]\n`;
+      existingFileNames.forEach(fn => {
+        const content = fs.readFileSync(path.join(rootPath, fn), 'utf8');
+        existingFilesContext += `--- FILE: ${fn} ---\n${content.substring(0, 1500)}\n\n`;
+      });
+    }
+  } catch (e) {}
+
   const planningPrompt = `[AUTONOMOUS GOAL AGENT - PLANNING PHASE]\n` +
     `Goal: "${goalPrompt}"\n` +
-    `Workspace: ${rootName}\n\n` +
-    `Break this goal down into 4-6 specific actionable steps. For each step, specify ONE single file to create/update.\n` +
-    `CRITICAL RULE: Each step MUST specify EXACTLY ONE single filename in "filename" (e.g. "index.html" or "styles.css" or "server.js" or "package.json"). NEVER put multiple filenames or commas in "filename".\n` +
+    `Workspace: ${rootName}\n` +
+    `${existingFilesContext}\n\n` +
+    `INSTRUCTION: Create an execution plan to fulfill the goal. If files already exist in workspace, plan steps to EXTEND and ENHANCE them without wiping out existing functionality!\n` +
+    `Break this goal down into 3-5 actionable steps. Each step MUST specify ONE unique filename in "filename" (e.g. "index.html" or "style.css" or "server.js" or "script.js").\n` +
     `Return JSON array format:\n` +
     `[{"step": 1, "description": "...", "filename": "index.html", "instruction": "..."}]`;
 
@@ -34,10 +48,10 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
     if (jsonMatch) plan = JSON.parse(jsonMatch[0]);
   } catch (e) {
     plan = [
-      { step: 1, description: "Create Main HTML Layout", filename: "index.html", instruction: "Create modern responsive HTML website layout" },
-      { step: 2, description: "Create CSS Stylesheet", filename: "styles.css", instruction: "Create modern CSS glassmorphism styles" },
-      { step: 3, description: "Create JS Logic & App Script", filename: "app.js", instruction: "Create interactive frontend JS logic" },
-      { step: 4, description: "Create Backend Server", filename: "server.js", instruction: "Create Node.js express backend server" }
+      { step: 1, description: "Update Main HTML Layout", filename: "index.html", instruction: "Enhance responsive HTML layout" },
+      { step: 2, description: "Update CSS Stylesheet", filename: "style.css", instruction: "Enhance CSS glassmorphism styles and color theme" },
+      { step: 3, description: "Update JS Logic & App Script", filename: "script.js", instruction: "Enhance interactive frontend JS logic" },
+      { step: 4, description: "Update Backend Server", filename: "server.js", instruction: "Enhance Node.js express backend server" }
     ];
   }
 
@@ -51,6 +65,15 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
     else if (fn.includes('script') || fn.includes('app')) fn = 'script.js';
     return { ...p, filename: fn };
   });
+
+  // Filter plan to ensure each unique file is processed once per run
+  const seenFiles = new Set();
+  plan = plan.filter(p => {
+    if (seenFiles.has(p.filename)) return false;
+    seenFiles.add(p.filename);
+    return true;
+  });
+  plan.forEach((p, idx) => p.step = idx + 1);
 
   reportLogs += `### 📋 Execution Plan (${plan.length} Steps)\n`;
   plan.forEach(p => {
@@ -67,6 +90,16 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
 
     const stepItem = plan[i];
     const targetFilename = stepItem.filename;
+    const targetPath = path.join(rootPath, targetFilename);
+
+    let existingContentSnippet = '';
+    if (fs.existsSync(targetPath)) {
+      const existingText = fs.readFileSync(targetPath, 'utf8');
+      if (existingText.trim()) {
+        existingContentSnippet = `\n\n[EXISTING CONTENT OF ${targetFilename}]:\n\`\`\`\n${existingText}\n\`\`\`\n` +
+          `CRITICAL RULE: DO NOT erase existing feature logic! PRESERVE and EXPAND all existing HTML elements, CSS variables, Express routes, and JS functions while implementing the requested changes.\n`;
+      }
+    }
 
     webview.postMessage({
       command: 'response',
@@ -78,14 +111,14 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
       `Goal: "${goalPrompt}"\n` +
       `Step Task: ${stepItem.description}\n` +
       `Target File: ${targetFilename}\n` +
-      `Instruction: ${stepItem.instruction}\n\n` +
+      `Instruction: ${stepItem.instruction}\n` +
+      `${existingContentSnippet}\n` +
       `Generate complete, production-ready code for ${targetFilename}. Return ONLY raw code without explanations.`;
 
     const codeRaw = await queryAi(stepPrompt, model, serverUrl, abortSignal);
     const cleanCode = codeRaw.replace(/```[a-z]*\n?/gi, '').replace(/```/g, '').trim();
 
     if (cleanCode) {
-      const targetPath = path.join(rootPath, targetFilename);
       fs.mkdirSync(path.dirname(targetPath), { recursive: true });
       fs.writeFileSync(targetPath, cleanCode, 'utf8');
 
@@ -95,7 +128,7 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
         await vscode.window.showTextDocument(doc, { preview: false, preserveFocus: true });
       } catch (e) {}
 
-      reportLogs += `\n- ✅ **Step ${stepItem.step}/${plan.length} Completed**: \`${targetFilename}\` created, written & opened in editor!\n`;
+      reportLogs += `\n- ✅ **Step ${stepItem.step}/${plan.length} Completed**: \`${targetFilename}\` updated, written & opened in editor!\n`;
     }
   }
 
