@@ -377,10 +377,13 @@
 
     <div class="row">
       <select id="model">
-        <option value="gemini-3.6-flash">Google Gemini 3.6 Flash (Latest)</option>
-        <option value="gemini-3.5-flash">Google Gemini 3.5 Flash</option>
-        <option value="gemini-3.1-flash-lite">Google Gemini 3.1 Flash-Lite (500 RPD)</option>
-        <option value="gemini-3.5-flash-lite">Google Gemini 3.5 Flash-Lite (500 RPD)</option>
+        <option value="antigravity">🤖 Antigravity Agent (60 RPM Autonomous)</option>
+        <option value="deep-research">🔬 Deep Research Pro (500 RPD)</option>
+        <option value="imagen-4">🎨 Imagen 4 UI Generator (25 RPD)</option>
+        <option value="gemini-3.1-flash-lite">Google Gemini 3.1 Flash-Lite (15 RPM / 500 RPD)</option>
+        <option value="gemini-3.5-flash-lite">Google Gemini 3.5 Flash-Lite (15 RPM / 500 RPD)</option>
+        <option value="gemini-2.5-flash-lite">Google Gemini 2.5 Flash-Lite (10 RPM / 20 RPD)</option>
+        <option value="gemini-3.6-flash">Google Gemini 3.6 Flash</option>
         <option value="qwen-2.5-coder">Qwen 2.5 Coder (Local Mesh)</option>
         <option value="deepseek-r1">DeepSeek-R1 (32B)</option>
       </select>
@@ -429,16 +432,16 @@
 
   <div class="footer">
     <div class="slash-menu" id="slash-menu">
+      <div class="slash-item" onclick="selectSlash('/antigravity ')"><span class="slash-cmd">/antigravity</span><span>Run Antigravity Autonomous Agent (60 RPM)</span></div>
+      <div class="slash-item" onclick="selectSlash('/research ')"><span class="slash-cmd">/research</span><span>Run Deep Research Pro (500 RPD)</span></div>
       <div class="slash-item" onclick="selectSlash('/goal ')"><span class="slash-cmd">/goal</span><span>Run 10-30 min autonomous agent goal</span></div>
-      <div class="slash-item" onclick="selectSlash('/research ')"><span class="slash-cmd">/research</span><span>Run multi-step deep research</span></div>
       <div class="slash-item" onclick="selectSlash('/explain ')"><span class="slash-cmd">/explain</span><span>Explain code logic</span></div>
       <div class="slash-item" onclick="selectSlash('/fix ')"><span class="slash-cmd">/fix</span><span>Fix diagnostic errors</span></div>
       <div class="slash-item" onclick="selectSlash('/tests ')"><span class="slash-cmd">/tests</span><span>Generate unit tests</span></div>
-      <div class="slash-item" onclick="selectSlash('/schedule ')"><span class="slash-cmd">/schedule</span><span>Set cron or timer</span></div>
     </div>
     <div class="chips">
-      <span class="chip" onclick="quick('/goal Create a full stack web application with HTML, CSS, JS and Express backend')">🚀 Build Full Stack App</span>
-      <span class="chip" onclick="quick('/research Analyze project architecture & security risks')">🔬 Deep Research</span>
+      <span class="chip" onclick="quick('/antigravity Create a full stack web application with HTML, CSS, JS and Express backend')">🤖 Antigravity Agent</span>
+      <span class="chip" onclick="quick('/research Analyze project architecture & security risks')">🔬 Deep Research Pro</span>
       <span class="chip" onclick="quick('@workspace tell about this project')">🌐 @workspace</span>
       <span class="chip" onclick="quick('/explain the selected code')">🧠 /explain</span>
       <span class="chip" onclick="quick('/fix all diagnostic errors')">🔧 /fix</span>
