@@ -64,7 +64,7 @@ function queryAi(prompt, model, serverUrl, abortSignal) {
   }
 
   if (provider === 'gemini' || (apiKey && provider !== 'campus-offline')) {
-    return queryGemini(fullPromptWithIdentity, apiKey, serverUrl, abortSignal);
+    return queryGemini(fullPromptWithIdentity, apiKey, serverUrl, abortSignal, model);
   }
   if (provider === 'openai' && apiKey) return queryOpenAI(prompt, apiKey, model, abortSignal);
   if (provider === 'claude' && apiKey) return queryClaude(prompt, apiKey, abortSignal);
@@ -134,18 +134,25 @@ function queryCampusLocal(prompt, model, serverUrl, abortSignal) {
 }
 
 function queryGemini(prompt, apiKey, serverUrl, abortSignal, targetModel) {
+  let primaryModel = targetModel || 'antigravity';
+  if (primaryModel === 'antigravity' || primaryModel.includes('Antigravity')) {
+    primaryModel = 'antigravity';
+  }
+
   const modelPool = [
-    targetModel || 'gemini-3.1-flash-lite',
+    primaryModel,
+    'antigravity',
+    'gemini-3.1-flash-lite',
     'gemini-3.5-flash-lite',
     'gemini-2.5-flash-lite',
     'gemini-3.5-flash',
     'gemini-3.6-flash',
-    'gemini-2.5-flash',
-    'gemini-2.0-flash',
-    'gemini-1.5-flash'
+    'gemini-2.5-flash'
   ];
 
-  return executeGeminiPool(prompt, apiKey, serverUrl, abortSignal, modelPool, 0);
+  const uniquePool = [...new Set(modelPool)];
+
+  return executeGeminiPool(prompt, apiKey, serverUrl, abortSignal, uniquePool, 0);
 }
 
 function executeGeminiPool(prompt, apiKey, serverUrl, abortSignal, pool, index) {
