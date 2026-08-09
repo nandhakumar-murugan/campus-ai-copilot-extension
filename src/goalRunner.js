@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { queryAi } = require('./aiProviders');
 
-async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, abortSignal) {
+async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, abortSignal) {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders || workspaceFolders.length === 0) {
     return "⚠️ Please open a workspace folder first to run autonomous goal execution!";
@@ -11,11 +11,12 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, abortSig
 
   const rootPath = workspaceFolders[0].uri.fsPath;
   const rootName = workspaceFolders[0].name;
+  const targetMsgId = msgId || 'goal-status';
 
   let reportLogs = `🚀 **Starting Autonomous Goal Loop (Antigravity Agent Mode)**\nGoal: "${goalPrompt}"\nWorkspace: \`${rootName}\`\n\n---\n`;
 
   // Step 1: Plan Sub-Tasks
-  webview.postMessage({ command: 'response', id: 'goal-status', text: reportLogs + '📋 *Step 1/5: Synthesizing multi-step execution plan...*' });
+  webview.postMessage({ command: 'response', id: targetMsgId, text: reportLogs + '📋 *Step 1/5: Synthesizing multi-step execution plan...*' });
 
   const planningPrompt = `[AUTONOMOUS GOAL AGENT - PLANNING PHASE]\n` +
     `Goal: "${goalPrompt}"\n` +
@@ -54,7 +55,7 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, abortSig
     const stepItem = plan[i];
     webview.postMessage({
       command: 'response',
-      id: 'goal-status',
+      id: targetMsgId,
       text: reportLogs + `⏳ *Executing Step ${stepItem.step}/${plan.length}: ${stepItem.description}...*`
     });
 
@@ -87,7 +88,7 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, abortSig
   const pkgPath = path.join(rootPath, 'package.json');
   if (fs.existsSync(pkgPath)) {
     reportLogs += `\n⚡ *Running \`npm install\` inside workspace folder...*\n`;
-    webview.postMessage({ command: 'response', id: 'goal-status', text: reportLogs });
+    webview.postMessage({ command: 'response', id: targetMsgId, text: reportLogs });
     try {
       const { execSync } = require('child_process');
       execSync('npm install', { cwd: rootPath, timeout: 30000 });

@@ -120,7 +120,7 @@ class CampusAiChatViewProvider {
             let answer;
             if (message.command === 'runGoal' || message.prompt.startsWith('/goal') || message.prompt.startsWith('/antigravity') || message.model === 'antigravity') {
               const cleanGoal = message.prompt.replace(/^(\/goal|\/antigravity)\s*/i, '').trim() || 'Create a full stack web application';
-              answer = await runAutonomousGoal(cleanGoal, message.model, serverUrl, webviewView.webview, this._abortController.signal);
+              answer = await runAutonomousGoal(cleanGoal, message.model, serverUrl, webviewView.webview, message.id, this._abortController.signal);
             } else if (message.command === 'deepResearch' || message.prompt.startsWith('/research')) {
               const cleanTopic = message.prompt.replace(/^\/research\s*/, '').trim() || 'Project Architecture & Optimizations';
               answer = await deepResearch(cleanTopic, message.model, serverUrl, this._abortController.signal);
