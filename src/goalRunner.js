@@ -80,25 +80,25 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
         await vscode.window.showTextDocument(doc, { preview: false, preserveFocus: true });
       } catch (e) {}
 
-      reportLogs += `✅ **Step ${stepItem.step}/${plan.length} Completed**: \`${stepItem.filename}\` created, written & opened in editor!\n`;
+      reportLogs += `\n\n- ✅ **Step ${stepItem.step}/${plan.length} Completed**: \`${stepItem.filename}\` created, written & opened in editor!\n`;
     }
   }
 
   // Check if package.json was created and run npm install automatically
   const pkgPath = path.join(rootPath, 'package.json');
   if (fs.existsSync(pkgPath)) {
-    reportLogs += `\n⚡ *Running \`npm install\` inside workspace folder...*\n`;
+    reportLogs += `\n\n⚡ *Running \`npm install\` inside workspace folder...*\n`;
     webview.postMessage({ command: 'response', id: targetMsgId, text: reportLogs });
     try {
       const { execSync } = require('child_process');
       execSync('npm install', { cwd: rootPath, timeout: 30000 });
-      reportLogs += `✅ \`npm install\` completed successfully!\n`;
+      reportLogs += `\n- ✅ \`npm install\` completed successfully!\n`;
     } catch (e) {
-      reportLogs += `ℹ️ \`npm install\` skipped or completed.\n`;
+      reportLogs += `\n- ℹ️ \`npm install\` skipped or completed.\n`;
     }
   }
 
-  reportLogs += `\n🎉 **GOAL 100% COMPLETED SUCCESSFULLY!**\nAll project files created, written & opened in your workspace \`${rootName}\`!`;
+  reportLogs += `\n\n---\n🎉 **GOAL 100% COMPLETED SUCCESSFULLY!**\nAll project files created, written & opened in your workspace \`${rootName}\`!\n`;
   return reportLogs;
 }
 
