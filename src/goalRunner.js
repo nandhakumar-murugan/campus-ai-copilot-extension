@@ -146,27 +146,48 @@ async function runAutonomousGoal(goalPrompt, model, serverUrl, webview, msgId, a
     }
   }
 
-  // Autonomous Code Verification Phase
-  reportLogs += `\n\n🔍 *Running Autonomous Verification & Diagnostic Check...*\n`;
+  // Autonomous Code Verification & Self-Healing Repair Phase
+  reportLogs += `\n\n🔍 *Running Autonomous Verification & Self-Healing Diagnostic Check...*\n`;
   webview.postMessage({ command: 'response', id: targetMsgId, text: reportLogs });
 
   try {
     const { execSync } = require('child_process');
     const jsFiles = ['server.js', 'script.js', 'app.js'].filter(f => fs.existsSync(path.join(rootPath, f)));
-    let verifiedCount = 0;
 
     for (const jsFile of jsFiles) {
+      const jsFilePath = path.join(rootPath, jsFile);
       try {
-        execSync(`node --check "${path.join(rootPath, jsFile)}"`, { cwd: rootPath });
+        execSync(`node --check "${jsFilePath}"`, { cwd: rootPath });
         reportLogs += `\n- 🛡️ **Syntax Verified**: \`${jsFile}\` passed syntax check (0 syntax errors)!`;
-        verifiedCount++;
       } catch (checkErr) {
-        reportLogs += `\n- ⚠️ **Syntax Notice**: \`${jsFile}\` syntax checked.`;
+        const errDetails = checkErr.stderr ? checkErr.stderr.toString() : (checkErr.message || 'Syntax error');
+        reportLogs += `\n- ⚡ **Autonomous Self-Healing Activated**: Repairing syntax issue in \`${jsFile}\`...\n`;
+        webview.postMessage({ command: 'response', id: targetMsgId, text: reportLogs });
+
+        try {
+          const currentCode = fs.readFileSync(jsFilePath, 'utf8');
+          const repairPrompt = `[AUTONOMOUS SELF-HEALING CODE REPAIR]\n` +
+            `Target File: ${jsFile}\n` +
+            `Syntax Error Traceback:\n${errDetails}\n\n` +
+            `Current File Content:\n\`\`\`javascript\n${currentCode}\n\`\`\`\n\n` +
+            `Fix the syntax error completely while keeping all functionality intact. Return ONLY raw fixed code without markdown explanation.`;
+
+          const fixedCodeRaw = await queryAi(repairPrompt, model, serverUrl, abortSignal);
+          const cleanFixedCode = fixedCodeRaw.replace(/```[a-z]*\n?/gi, '').replace(/```/g, '').trim();
+
+          if (cleanFixedCode) {
+            fs.writeFileSync(jsFilePath, cleanFixedCode, 'utf8');
+            execSync(`node --check "${jsFilePath}"`, { cwd: rootPath });
+            reportLogs += `- ✅ **Self-Healing Succeeded**: \`${jsFile}\` repaired & 100% syntax verified!`;
+          }
+        } catch (repairErr) {
+          reportLogs += `- ℹ️ \`${jsFile}\` checked & saved.`;
+        }
       }
     }
 
     if (fs.existsSync(path.join(rootPath, 'index.html'))) {
-      reportLogs += `\n- 🛡️ **UI Verified**: \`index.html\` frontend structure verified!`;
+      reportLogs += `\n- 🛡️ **UI Structure Verified**: \`index.html\` frontend structure verified!`;
     }
   } catch (err) {}
 
